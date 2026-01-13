@@ -1,6 +1,8 @@
 package model;
 
 import strategy.IdleStrategy;
+import strategy.AggressiveStrategy;
+
 
 public class Game {
     private int turn = 1;
@@ -9,7 +11,8 @@ public class Game {
 
     public Game() {
         board = new Board(8, 8);
-        minion = new Soldier(new IdleStrategy());
+        minion = new Soldier(new AggressiveStrategy());
+
     }
 
     public void nextTurn() {
