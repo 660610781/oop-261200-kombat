@@ -1,90 +1,146 @@
-# การออกแบบโปรเจค – OOP 261200 KOMBAT
+# OOP 261200 Project – K0MBAT
+## Design Document
 
-## 1. ภาพรวมของโปรเจค
-โปรเจคนี้เป็นเกมแนว Turn-based Strategy  
-พัฒนาขึ้นเพื่อใช้ประกอบการเรียนวิชา 261200 Object-Oriented Programming
+### 1. ภาพรวมของโปรแกรม
+โปรแกรมนี้เป็นเกมแบบ turn-based บนกระดานสองมิติ (grid board)  
+พัฒนาโดยใช้แนวคิด Object-Oriented Programming (OOP) ตามรายวิชา 261200  
+โดยมีเป้าหมายเพื่อสาธิตการใช้งาน abstraction, encapsulation, inheritance, polymorphism  
+รวมถึงการประยุกต์ใช้ Design Patterns และแนวคิดเรื่อง Grammars และ Parsing
 
-ตัวเกมถูกออกแบบโดยเน้นหลักการเชิงวัตถุ (Object-Oriented Programming)
-และการใช้ Design Pattern เพื่อให้โค้ดมีโครงสร้างที่ชัดเจน
-สามารถขยายและแก้ไขได้ง่ายในอนาคต
-
----
-
-## 2. Architecture (MVC)
-
-โปรเจคนี้ใช้แนวคิด **Model–View–Controller (MVC)** ในการออกแบบ
-
-### 2.1 Model
-ส่วน Model ทำหน้าที่เก็บข้อมูลและตรรกะหลักของเกม ประกอบด้วย:
-- `Game` : ควบคุมสถานะของเกม เช่น turn, กระดาน และตัวละคร
-- `Board` : แทนกระดานของเกม
-- `Hex` : แทนช่องหนึ่งช่องบนกระดาน
-- `Minion` : คลาสนามธรรมของตัวละคร
-- `Soldier` : ตัวอย่างตัวละครที่สืบทอดจาก Minion
-
-### 2.2 Controller
-- `Main` : ทำหน้าที่เริ่มเกมและเรียกการทำงานของเกมในแต่ละรอบ (turn)
-
-### 2.3 View
-- ปัจจุบันแสดงผลผ่าน Console
-- สามารถพัฒนาเพิ่มเติมเป็น GUI ได้ในอนาคต
+ตัวเกมสามารถควบคุมตัวละคร (Minion) ผ่านภาษาสคริปต์ที่ออกแบบขึ้นเอง  
+ซึ่งจะถูกแปลงเป็น Abstract Syntax Tree (AST) และนำไปประมวลผลใน runtime
 
 ---
 
-## 3. การออกแบบเชิงวัตถุ (Object-Oriented Design)
+### 2. โครงสร้างระบบ (Architecture)
+โปรแกรมถูกออกแบบตามแนวคิด **Model–View–Controller (MVC)** เพื่อแยกหน้าที่ของแต่ละส่วนอย่างชัดเจน
 
-### 3.1 Encapsulation
-ข้อมูลสำคัญของเกม เช่น จำนวนรอบ (turn), กระดาน และตัวละคร
-ถูกเก็บไว้ภายในคลาส `Game` เพื่อป้องกันการเข้าถึงโดยตรงจากภายนอก
+controller/ → ควบคุมลำดับการทำงานของโปรแกรม
+model/ → เก็บ state และ logic หลักของเกม
+parser/ → ภาษาสคริปต์, tokenizer, parser และ AST
+strategy/ → พฤติกรรมของตัวละคร (AI behavior)
 
-### 3.2 Inheritance
-- `Minion` เป็น abstract class
-- `Soldier` เป็นคลาสที่สืบทอดจาก `Minion`
-  ทำให้สามารถสร้างตัวละครประเภทอื่นเพิ่มได้ในอนาคต
+yaml
+คัดลอกโค้ด
 
-### 3.3 Polymorphism
-พฤติกรรมของตัวละครสามารถเปลี่ยนได้ในระหว่างเกม
-โดยไม่ต้องแก้ไขโค้ดของคลาส `Minion`
+การแยกโครงสร้างเช่นนี้ช่วยให้ระบบมีความ modular และง่ายต่อการขยายในอนาคต
 
 ---
 
-## 4. Strategy Pattern
+### 3. Model Layer
+#### 3.1 Game
+คลาส `Game` ทำหน้าที่เป็นศูนย์กลางของ state ของเกม ประกอบด้วย:
+- กระดาน (`Board`)
+- ตัวละคร (`Minion`)
+- หมายเลขรอบการเล่น (turn)
 
-โปรเจคนี้ใช้ **Strategy Pattern** เพื่อแยกพฤติกรรมของตัวละครออกจากตัวละครเอง
-
-### 4.1 Strategy Interface
-- `Strategy` เป็น interface ที่กำหนดเมธอด `execute`
-
-### 4.2 Concrete Strategies
-- `IdleStrategy` : ตัวละครไม่ทำอะไร
-- `AggressiveStrategy` : ตัวละครมีพฤติกรรมเชิงรุก
-
-ตัวละครสามารถเปลี่ยน Strategy ได้ในระหว่างเกม
-ผ่านเมธอด `setStrategy` ทำให้เกิดการเปลี่ยนพฤติกรรมแบบ runtime
+เมธอด `nextTurn()` จะเป็นตัวควบคุมลำดับของเกมในแต่ละรอบ
 
 ---
 
-## 5. ลำดับการทำงานของเกมในหนึ่งรอบ (Turn)
+#### 3.2 Board
+`Board` แทนกระดานของเกม มีหน้าที่:
+- เก็บขนาดของกระดาน
+- แสดงผลกระดานและตำแหน่งของ Minion
+- เป็นผู้กำหนดขอบเขต (boundary) ของเกม
 
-1. Controller เรียก `game.nextTurn()`
-2. เกมแสดงหมายเลขรอบปัจจุบัน
-3. แสดงกระดานของเกม
-4. ตัวละครทำงานตาม Strategy ที่ถูกกำหนด
-5. เพิ่มค่า turn เพื่อเข้าสู่รอบถัดไป
-
----
-
-## 6. ความสามารถในการขยายระบบ (Extensibility)
-
-โครงสร้างของโปรเจคถูกออกแบบให้สามารถขยายได้ง่าย:
-- เพิ่ม Strategy ใหม่ได้โดยไม่ต้องแก้โค้ดเดิม
-- เพิ่มตัวละครใหม่ได้ด้วยการสืบทอดคลาส `Minion`
-- เปลี่ยนการแสดงผลจาก Console เป็น GUI ได้
+Board ไม่เปลี่ยนตำแหน่ง Minion โดยตรง แต่ทำหน้าที่ตรวจสอบและแสดงผลเท่านั้น  
+สอดคล้องกับหลัก **single responsibility principle**
 
 ---
 
-## 7. สรุป
-โปรเจคนี้แสดงให้เห็นถึงการนำแนวคิด
-Object-Oriented Programming และ Design Pattern
-เช่น MVC, Inheritance, Polymorphism และ Strategy Pattern
-มาประยุกต์ใช้งานจริงในการพัฒนาโปรแกรม
+#### 3.3 Minion และ Soldier
+`Minion` เป็น abstract representation ของตัวละครในเกม โดยมี:
+- ตำแหน่ง (row, col)
+- พฤติกรรม (Strategy)
+
+`Soldier` เป็น subclass ของ Minion ที่กำหนดค่าเริ่มต้นของพลังชีวิตและตำแหน่ง  
+แสดงการใช้ **inheritance** อย่างชัดเจน
+
+---
+
+### 4. Strategy Pattern
+พฤติกรรมของ Minion ถูกออกแบบด้วย **Strategy Pattern**
+
+Strategy (interface)
+├── IdleStrategy
+└── AggressiveStrategy
+
+yaml
+คัดลอกโค้ด
+
+Minion จะไม่ผูกกับพฤติกรรมใดพฤติกรรมหนึ่งโดยตรง  
+แต่สามารถเปลี่ยน Strategy ได้ใน runtime  
+แสดงการใช้ **polymorphism** และ **composition over inheritance**
+
+---
+
+### 5. ภาษาสคริปต์ (Scripting Language)
+เกมรองรับภาษาสคริปต์แบบง่ายสำหรับควบคุมพฤติกรรมของ Minion เช่น:
+
+idle
+aggressive
+move right
+repeat 2 {
+move down
+}
+
+nginx
+คัดลอกโค้ด
+
+Grammar โดยย่อ:
+statement ::= idle
+| aggressive
+| move direction
+| repeat NUMBER { statement* }
+
+yaml
+คัดลอกโค้ด
+
+---
+
+### 6. Parser และ AST
+ระบบ parsing ถูกพัฒนาเองทั้งหมดโดยไม่ใช้ library ภายนอก ประกอบด้วย:
+
+- `Tokenizer` แยก input เป็น token
+- `Parser` แปลง token เป็น AST
+- AST nodes เช่น `IdleStmt`, `MoveStmt`, `RepeatStmt`
+
+AST แต่ละ node มีเมธอด `execute()`  
+ซึ่งทำหน้าที่เป็น **interpreter** ของภาษา
+
+---
+
+### 7. Error Handling
+มีการแยก error ของผู้ใช้ (syntax error) ออกจาก error ของโปรแกรม  
+ผ่านคลาส `ParseException`
+
+หากสคริปต์ผิดพลาด:
+- เกมจะไม่ crash
+- แสดงข้อความ error ที่เข้าใจง่าย
+
+แนวคิดนี้สอดคล้องกับบทเรียน **Exceptions vs Errors**
+
+---
+
+### 8. Representation Invariant
+มีการกำหนด invariant สำคัญของระบบ เช่น:
+- Minion ต้องไม่อยู่นอกขอบกระดาน
+- ตำแหน่งของ Minion ต้องเป็นค่าที่ถูกต้องเสมอ
+
+การตรวจสอบ invariant ถูกจัดการในระดับ model เพื่อความถูกต้องของ state
+
+---
+
+### 9. สรุป
+โปรเจคนี้แสดงให้เห็นการประยุกต์ใช้แนวคิด OOP อย่างครบถ้วน:
+- Encapsulation ผ่านการแยก responsibility
+- Inheritance และ polymorphism ในระบบตัวละคร
+- Design Patterns (Strategy)
+- Grammar, Parsing และ AST
+- Robust error handling
+
+โครงสร้างของระบบเอื้อต่อการขยายในอนาคต เช่น
+- เพิ่มตัวละครหลายตัว
+- เพิ่มคำสั่งใหม่ในภาษา
+- พัฒนาเป็นเกมที่ซับซ้อนขึ้น
