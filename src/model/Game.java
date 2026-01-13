@@ -4,6 +4,10 @@ import strategy.IdleStrategy;
 import strategy.AggressiveStrategy;
 import parser.*;
 import java.util.List;
+import parser.Parser;
+import parser.Statement;
+import java.util.List;
+
 
 
 
@@ -22,18 +26,23 @@ public class Game {
         System.out.println("Turn " + turn);
         board.printBoard();
 
-        Statement program = new RepeatStmt(
-                2,
-                List.of(
-                        new AggressiveStmt(),
-                        new IdleStmt()
-                )
-        );
+        String script = """
+        repeat 2 {
+            aggressive
+            idle
+        }
+        """;
 
-        program.execute(minion, this);
+        Parser parser = new Parser(script);
+        List<Statement> program = parser.parseProgram();
+
+        for (Statement stmt : program) {
+            stmt.execute(minion, this);
+        }
 
         turn++;
     }
+
 
 
 }
