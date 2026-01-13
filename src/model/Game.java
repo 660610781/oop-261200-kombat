@@ -18,7 +18,7 @@ public class Game {
 
     public Game() {
         board = new Board(8, 8);
-        minion = new Soldier(new AggressiveStrategy());
+        minion = new Soldier(new AggressiveStrategy(), 0, 0);
 
     }
 
@@ -27,22 +27,24 @@ public class Game {
         board.printBoard();
 
         String script = """
-        repeat 2 {
-            aggressive
-            idle
-        }
+                 move right
+                 move down
+                 repeat 2 {
+                     move right
+                 }
         """;
 
-        Parser parser = new Parser(script);
-        List<Statement> program = parser.parseProgram();
+        try {
+            Parser parser = new Parser(script);
+            List<Statement> program = parser.parseProgram();
 
-        for (Statement stmt : program) {
-            stmt.execute(minion, this);
+            for (Statement stmt : program) {
+                stmt.execute(minion, this);
+            }
+        } catch (ParseException e) {
+            System.out.println("Script error: " + e.getMessage());
         }
 
         turn++;
     }
-
-
-
 }

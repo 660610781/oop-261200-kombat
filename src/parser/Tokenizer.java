@@ -10,9 +10,12 @@ public class Tokenizer {
 
     public Tokenizer(String input) {
         input = input.replace("{", " { ")
-                .replace("}", " } ");
+                .replace("}", " } ")
+                .trim(); // ⭐ เพิ่มบรรทัดนี้
+
         this.tokens = List.of(input.split("\\s+"));
     }
+
 
     public boolean hasNext() {
         return pos < tokens.size();

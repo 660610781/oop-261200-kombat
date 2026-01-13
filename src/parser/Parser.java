@@ -30,19 +30,33 @@ public class Parser {
             return new AggressiveStmt();
         }
 
+        // ⭐ ใส่ move ตรงนี้
+        if (token.equals("move")) {
+            String dir = tokenizer.next();
+
+            return switch (dir) {
+                case "up" -> new MoveStmt(-1, 0);
+                case "down" -> new MoveStmt(1, 0);
+                case "left" -> new MoveStmt(0, -1);
+                case "right" -> new MoveStmt(0, 1);
+                default -> throw new ParseException("ทิศทาง move ไม่ถูกต้อง: " + dir);
+            };
+        }
+
         if (token.equals("repeat")) {
             int times = Integer.parseInt(tokenizer.next());
-            tokenizer.next(); // skip "{"
+            tokenizer.next(); // "{"
 
             List<Statement> body = new ArrayList<>();
             while (!tokenizer.peek().equals("}")) {
                 body.add(parseStatement());
             }
-            tokenizer.next(); // skip "}"
+            tokenizer.next(); // "}"
 
             return new RepeatStmt(times, body);
         }
 
-        throw new RuntimeException("Unknown token: " + token);
+        throw new ParseException("คำสั่งไม่รู้จัก: " + token);
     }
+
 }
