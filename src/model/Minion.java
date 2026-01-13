@@ -34,10 +34,20 @@ public abstract class Minion {
         return col;
     }
 
-    public void move(int dRow, int dCol) {
-        row += dRow;
-        col += dCol;
+    public void move(int dRow, int dCol, Board board) {
+        int newRow = row + dRow;
+        int newCol = col + dCol;
+
+        if (newRow < 0 || newRow >= board.getRows()
+                || newCol < 0 || newCol >= board.getCols()) {
+            System.out.println("Minion hits the wall!");
+            return;
+        }
+
+        row = newRow;
+        col = newCol;
         System.out.println("Minion moves to (" + row + ", " + col + ")");
     }
+
 
 }

@@ -15,6 +15,7 @@ public class MoveStmt implements Statement {
 
     @Override
     public void execute(Minion minion, Game game) {
-        minion.move(dRow, dCol);
+        minion.move(dRow, dCol, game.getBoard());
+
     }
 }

@@ -24,7 +24,8 @@ public class Game {
 
     public void nextTurn() {
         System.out.println("Turn " + turn);
-        board.printBoard();
+        board.printBoard(minion);
+
 
         String script = """
                  move right
@@ -47,4 +48,9 @@ public class Game {
 
         turn++;
     }
+
+    public Board getBoard() {
+        return board;
+    }
+
 }

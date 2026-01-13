@@ -21,12 +21,26 @@ public class Board {
         return grid[r][c];
     }
 
-    public void printBoard() {
+    public void printBoard(Minion minion) {
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
-                System.out.print(". ");
+                if (r == minion.getRow() && c == minion.getCol()) {
+                    System.out.print("M ");
+                } else {
+                    System.out.print(". ");
+                }
             }
             System.out.println();
         }
     }
+
+
+    public int getRows() {
+        return rows;
+    }
+
+    public int getCols() {
+        return cols;
+    }
+
 }
