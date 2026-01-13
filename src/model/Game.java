@@ -2,6 +2,8 @@ package model;
 
 import strategy.IdleStrategy;
 import strategy.AggressiveStrategy;
+import parser.*;
+import java.util.List;
 
 
 
@@ -20,14 +22,18 @@ public class Game {
         System.out.println("Turn " + turn);
         board.printBoard();
 
-        // ⭐ เพิ่ม logic ใหม่
-        if (turn == 2) {
-            System.out.println("Minion switches strategy!");
-            minion.setStrategy(new IdleStrategy());
-        }
+        Statement program = new RepeatStmt(
+                2,
+                List.of(
+                        new AggressiveStmt(),
+                        new IdleStmt()
+                )
+        );
 
-        minion.takeTurn(this);
+        program.execute(minion, this);
+
         turn++;
     }
+
 
 }
