@@ -6,7 +6,9 @@ import parser.*;
 import java.util.List;
 import parser.Parser;
 import parser.Statement;
+import java.util.ArrayList;
 import java.util.List;
+
 
 
 
@@ -14,17 +16,19 @@ import java.util.List;
 public class Game {
     private int turn = 1;
     private Board board;
-    private Minion minion;
+    private List<Minion> minions = new ArrayList<>();
+
 
     public Game() {
         board = new Board(8, 8);
-        minion = new Soldier(new AggressiveStrategy(), 0, 0);
+        minions.add(new Soldier(new AggressiveStrategy(), 0, 0));
+        minions.add(new Soldier(new IdleStrategy(), 2, 2));
 
     }
 
     public void nextTurn() {
         System.out.println("Turn " + turn);
-        board.printBoard(minion);
+        board.printBoard(minions);
 
 
         String script = """
@@ -39,8 +43,10 @@ public class Game {
             Parser parser = new Parser(script);
             List<Statement> program = parser.parseProgram();
 
-            for (Statement stmt : program) {
-                stmt.execute(minion, this);
+            for (Minion m : minions) {
+                for (Statement stmt : program) {
+                    stmt.execute(m, this);
+                }
             }
         } catch (ParseException e) {
             System.out.println("Script error: " + e.getMessage());
@@ -51,6 +57,10 @@ public class Game {
 
     public Board getBoard() {
         return board;
+    }
+
+    public List<Minion> getMinions() {
+        return minions;
     }
 
 }

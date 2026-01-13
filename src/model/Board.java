@@ -1,5 +1,7 @@
 package model;
 
+import java.util.List;
+
 public class Board {
     private final int rows;
     private final int cols;
@@ -21,18 +23,25 @@ public class Board {
         return grid[r][c];
     }
 
-    public void printBoard(Minion minion) {
+    public void printBoard(List<Minion> minions) {
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
-                if (r == minion.getRow() && c == minion.getCol()) {
-                    System.out.print("M ");
-                } else {
+                boolean found = false;
+                for (Minion m : minions) {
+                    if (m.getRow() == r && m.getCol() == c) {
+                        System.out.print("M ");
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
                     System.out.print(". ");
                 }
             }
             System.out.println();
         }
     }
+
 
 
     public int getRows() {
