@@ -15,7 +15,8 @@ public abstract class Minion {
         strategy.execute(this, game);
     }
 
-    public int getHp() {
-        return hp;
+    // ⭐ เพิ่มเข้ามาใหม่
+    public void setStrategy(Strategy strategy) {
+        this.strategy = strategy;
     }
 }
