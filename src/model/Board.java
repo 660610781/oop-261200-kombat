@@ -8,6 +8,12 @@ public class Board {
     private final Hex[][] grid;
 
     public Board(int rows, int cols) {
+        if (rows <= 0 || cols <= 0) {
+            throw new IllegalArgumentException(
+                    "Board size must be positive"
+            );
+        }
+
         this.rows = rows;
         this.cols = cols;
         this.grid = new Hex[rows][cols];
@@ -18,6 +24,7 @@ public class Board {
             }
         }
     }
+
 
     public Hex getHex(int r, int c) {
         return grid[r][c];
@@ -51,5 +58,10 @@ public class Board {
     public int getCols() {
         return cols;
     }
+
+    public boolean isInside(int row, int col) {
+        return row >= 0 && row < rows && col >= 0 && col < cols;
+    }
+
 
 }
