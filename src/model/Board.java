@@ -3,65 +3,48 @@ package model;
 import java.util.List;
 
 public class Board {
+
     private final int rows;
     private final int cols;
-    private final Hex[][] grid;
 
     public Board(int rows, int cols) {
-        if (rows <= 0 || cols <= 0) {
-            throw new IllegalArgumentException(
-                    "Board size must be positive"
-            );
-        }
-
         this.rows = rows;
         this.cols = cols;
-        this.grid = new Hex[rows][cols];
-
-        for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < cols; c++) {
-                grid[r][c] = new Hex(r, c);
-            }
-        }
     }
 
-
-    public Hex getHex(int r, int c) {
-        return grid[r][c];
+    public boolean isInside(int r, int c) {
+        return r >= 0 && r < rows && c >= 0 && c < cols;
     }
 
-    public void printBoard(List<Minion> minions) {
+    public void printBoard(List<Minion> minions, List<Enemy> enemies) {
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
-                boolean found = false;
-                for (Minion m : minions) {
-                    if (m.getRow() == r && m.getCol() == c) {
-                        System.out.print("M ");
-                        found = true;
+
+                boolean printed = false;
+
+                for (Enemy e : enemies) {
+                    if (!e.isDead() && e.getRow() == r && e.getCol() == c) {
+                        System.out.print("E ");
+                        printed = true;
                         break;
                     }
                 }
-                if (!found) {
+
+                if (printed) continue;
+
+                for (Minion m : minions) {
+                    if (m.getRow() == r && m.getCol() == c) {
+                        System.out.print("M ");
+                        printed = true;
+                        break;
+                    }
+                }
+
+                if (!printed) {
                     System.out.print(". ");
                 }
             }
             System.out.println();
         }
     }
-
-
-
-    public int getRows() {
-        return rows;
-    }
-
-    public int getCols() {
-        return cols;
-    }
-
-    public boolean isInside(int row, int col) {
-        return row >= 0 && row < rows && col >= 0 && col < cols;
-    }
-
-
 }

@@ -1,21 +1,22 @@
 package parser;
 
-import model.Game;
-import model.Minion;
+import model.*;
 
-public class MoveStmt implements Statement {
+public class MoveStmt implements Statement<Minion> {
+    private final String dir;
 
-    private final int dRow;
-    private final int dCol;
-
-    public MoveStmt(int dRow, int dCol) {
-        this.dRow = dRow;
-        this.dCol = dCol;
+    public MoveStmt(String dir) {
+        this.dir = dir;
     }
 
     @Override
     public void execute(Minion minion, Game game) {
-        minion.move(dRow, dCol, game.getBoard());
-
+        switch (dir) {
+            case "up" -> minion.move(-1, 0, game.getBoard());
+            case "down" -> minion.move(1, 0, game.getBoard());
+            case "left" -> minion.move(0, -1, game.getBoard());
+            case "right" -> minion.move(0, 1, game.getBoard());
+            default -> System.out.println("ทิศทางไม่ถูกต้อง: " + dir);
+        }
     }
 }

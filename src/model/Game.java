@@ -1,66 +1,57 @@
 package model;
 
-import strategy.IdleStrategy;
-import strategy.AggressiveStrategy;
-import parser.*;
-import java.util.List;
+import parser.ParseException;
 import parser.Parser;
 import parser.Statement;
+import strategy.IdleStrategy;
+
 import java.util.ArrayList;
 import java.util.List;
 
-
-
-
-
 public class Game {
-    private int turn = 1;
-    private Board board;
-    private List<Minion> minions = new ArrayList<>();
 
+    private final Board board;
+    private final List<Minion> minions = new ArrayList<>();
+    private final List<Enemy> enemies = new ArrayList<>();
 
     public Game() {
-        board = new Board(8, 8);
-        minions.add(new Soldier(new AggressiveStrategy(), 0, 0));
-        minions.add(new Soldier(new IdleStrategy(), 2, 2));
+        board = new Board(6, 6);
 
-    }
+        // Minion เริ่มต้น
+        minions.add(new Soldier(
+                new IdleStrategy(),
+                0,
+                0
+        ));
 
-    public void nextTurn() {
-        System.out.println("Turn " + turn);
-        board.printBoard(minions);
-
-
-        String script = """
-                 move right
-                 move down
-                 repeat 2 {
-                     move right
-                 }
-        """;
-
-        try {
-            Parser parser = new Parser(script);
-            List<Statement> program = parser.parseProgram();
-
-            for (Minion m : minions) {
-                for (Statement stmt : program) {
-                    stmt.execute(m, this);
-                }
-            }
-        } catch (ParseException e) {
-            System.out.println("Script error: " + e.getMessage());
-        }
-
-        turn++;
+        // Enemy ตัวอย่าง
+        enemies.add(new Enemy(1, 3, 10));
     }
 
     public Board getBoard() {
         return board;
     }
 
+    public void printBoard() {
+        board.printBoard(minions, enemies);
+    }
+
+    public void runScript(String script) {
+        try {
+            Parser parser = new Parser(script);
+            Statement<Minion> stmt = parser.parse();
+            stmt.execute(minions.get(0), this);
+        } catch (ParseException e) {
+            System.out.println("Script error: " + e.getMessage());
+        }
+    }
+
     public List<Minion> getMinions() {
         return minions;
+    }
+
+    public List<Enemy> getEnemies() {
+        return enemies;
     }
 
 }

@@ -6,7 +6,7 @@ import model.Minion;
 public class IdleStrategy implements Strategy {
 
     @Override
-    public void execute(Minion self, Game game) {
+    public void attack(Minion self, Game game) {
         System.out.println("Minion is idling...");
     }
 }

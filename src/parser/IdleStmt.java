@@ -1,14 +1,12 @@
 package parser;
 
-import model.Game;
-import model.Minion;
+import model.*;
 import strategy.IdleStrategy;
 
-public class IdleStmt implements Statement {
-
+public class IdleStmt implements Statement<Minion> {
     @Override
     public void execute(Minion minion, Game game) {
         minion.setStrategy(new IdleStrategy());
-        minion.takeTurn(game);
+        System.out.println("Minion switches to idle");
     }
 }

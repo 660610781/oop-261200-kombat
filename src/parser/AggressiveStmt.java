@@ -1,14 +1,12 @@
 package parser;
 
-import model.Game;
-import model.Minion;
+import model.*;
 import strategy.AggressiveStrategy;
 
-public class AggressiveStmt implements Statement {
-
+public class AggressiveStmt implements Statement<Minion> {
     @Override
     public void execute(Minion minion, Game game) {
         minion.setStrategy(new AggressiveStrategy());
-        minion.takeTurn(game);
+        System.out.println("Minion switches to aggressive");
     }
 }

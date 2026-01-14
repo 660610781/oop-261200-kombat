@@ -1,31 +1,38 @@
 package parser;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Tokenizer {
-
     private final List<String> tokens;
-    private int pos = 0;
+    private int index = 0;
 
-    public Tokenizer(String input) {
-        input = input.replace("{", " { ")
-                .replace("}", " } ")
-                .trim(); // ⭐ เพิ่มบรรทัดนี้
+    public Tokenizer(String src) {
+        src = src.replace("{", " { ").replace("}", " } ");
 
-        this.tokens = List.of(input.split("\\s+"));
+        tokens = new ArrayList<>();
+        for (String t : src.split("\\s+")) {
+            if (!t.isBlank()) {
+                tokens.add(t);
+            }
+        }
     }
-
 
     public boolean hasNext() {
-        return pos < tokens.size();
-    }
-
-    public String peek() {
-        return tokens.get(pos);
+        return index < tokens.size();
     }
 
     public String next() {
-        return tokens.get(pos++);
+        return hasNext() ? tokens.get(index++) : null;
+    }
+
+    public String peek() {
+        return hasNext() ? tokens.get(index) : null;
+    }
+
+    public void expect(String s) throws ParseException {
+        String t = next();
+        if (!s.equals(t)) {
+            throw new ParseException("คาดว่าเป็น '" + s + "' แต่เจอ '" + t + "'");
+        }
     }
 }

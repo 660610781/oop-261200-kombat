@@ -2,15 +2,13 @@ package parser;
 
 import model.Game;
 import model.Minion;
-
 import java.util.List;
 
-public class RepeatStmt implements Statement {
-
+public class RepeatStmt implements Statement<Minion> {
     private final int times;
-    private final List<Statement> body;
+    private final List<Statement<Minion>> body;
 
-    public RepeatStmt(int times, List<Statement> body) {
+    public RepeatStmt(int times, List<Statement<Minion>> body) {
         this.times = times;
         this.body = body;
     }
@@ -18,8 +16,8 @@ public class RepeatStmt implements Statement {
     @Override
     public void execute(Minion minion, Game game) {
         for (int i = 0; i < times; i++) {
-            for (Statement stmt : body) {
-                stmt.execute(minion, game);
+            for (Statement<Minion> s : body) {
+                s.execute(minion, game);
             }
         }
     }

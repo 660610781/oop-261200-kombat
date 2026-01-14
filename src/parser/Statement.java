@@ -1,8 +1,7 @@
 package parser;
 
 import model.Game;
-import model.Minion;
 
-public interface Statement {
-    void execute(Minion minion, Game game);
+public interface Statement<T> {
+    void execute(T target, Game game);
 }

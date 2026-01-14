@@ -1,62 +1,89 @@
 package parser;
 
-import java.util.ArrayList;
-import java.util.List;
+import model.Minion;
+import java.util.*;
 
 public class Parser {
 
     private final Tokenizer tokenizer;
 
-    public Parser(String input) {
-        this.tokenizer = new Tokenizer(input);
+    public Parser(String script) {
+        this.tokenizer = new Tokenizer(script);
     }
 
-    public List<Statement> parseProgram() {
-        List<Statement> statements = new ArrayList<>();
+    public Statement<Minion> parse() throws ParseException {
+        List<Statement<Minion>> stmts = new ArrayList<>();
+
         while (tokenizer.hasNext()) {
-            statements.add(parseStatement());
+            stmts.add(parseStatement());
         }
-        return statements;
+
+        return new SequenceStmt(stmts);
     }
 
-    private Statement parseStatement() {
-        String token = tokenizer.next();
+    // 🔥 เมธอดที่คุณถามถึง
+    private Statement<Minion> parseStatement() throws ParseException {
+        String token = tokenizer.peek();
 
-        if (token.equals("idle")) {
-            return new IdleStmt();
+        if (token == null) {
+            throw new ParseException("Unexpected end of input");
         }
 
+        // move
+        if (token.equals("move")) {
+            tokenizer.next(); // move
+            String dir = tokenizer.next();
+            return new MoveStmt(dir);
+        }
+
+        // attack
+        if (token.equals("attack")) {
+            tokenizer.next();
+            return new AttackStmt();
+        }
+
+        // aggressive
         if (token.equals("aggressive")) {
+            tokenizer.next();
             return new AggressiveStmt();
         }
 
-        // ⭐ ใส่ move ตรงนี้
-        if (token.equals("move")) {
-            String dir = tokenizer.next();
-
-            return switch (dir) {
-                case "up" -> new MoveStmt(-1, 0);
-                case "down" -> new MoveStmt(1, 0);
-                case "left" -> new MoveStmt(0, -1);
-                case "right" -> new MoveStmt(0, 1);
-                default -> throw new ParseException("ทิศทาง move ไม่ถูกต้อง: " + dir);
-            };
+        // idle
+        if (token.equals("idle")) {
+            tokenizer.next();
+            return new IdleStmt();
         }
 
-        if (token.equals("repeat")) {
-            int times = Integer.parseInt(tokenizer.next());
-            tokenizer.next(); // "{"
+        // print
+        if (token.equals("print")) {
+            tokenizer.next();
+            return new PrintStmt();
+        }
 
-            List<Statement> body = new ArrayList<>();
+        // repeat
+        if (token.equals("repeat")) {
+            tokenizer.next(); // repeat
+            String num = tokenizer.next();
+
+            int times;
+            try {
+                times = Integer.parseInt(num);
+            } catch (NumberFormatException e) {
+                throw new ParseException("จำนวนครั้งของ repeat ต้องเป็นตัวเลข");
+            }
+
+            tokenizer.expect("{");
+
+            List<Statement<Minion>> body = new ArrayList<>();
             while (!tokenizer.peek().equals("}")) {
                 body.add(parseStatement());
             }
-            tokenizer.next(); // "}"
 
+            tokenizer.expect("}");
             return new RepeatStmt(times, body);
         }
 
+        // ❌ unknown command
         throw new ParseException("คำสั่งไม่รู้จัก: " + token);
     }
-
 }
